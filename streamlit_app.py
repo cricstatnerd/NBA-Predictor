@@ -2,9 +2,9 @@ import streamlit as st
 import requests
 
 # Set page configuration
-st.set_page_config(page_title="🏀 NBA Match Predictor", page_icon="🏆", layout="centered")
+st.set_page_config(page_title="🏀 NBA Match Predictor & Betting Insights", page_icon="🏆", layout="centered")
 
-# Function to get team logos based on full name, short forms, and location
+# Function to get accurate team logos based on full name, short forms, and city names
 def get_team_logo(team_name):
     team_logos = {
         "Los Angeles Lakers": ["Lakers", "LAL", "Los Angeles"],
@@ -21,7 +21,7 @@ def get_team_logo(team_name):
         "Dallas Mavericks": ["Mavericks", "Mavs", "DAL", "Dallas"],
         "Denver Nuggets": ["Nuggets", "DEN", "Denver"],
         "Houston Rockets": ["Rockets", "HOU", "Houston"],
-        "Los Angeles Clippers": ["Clippers", "LAC", "Los Angeles"],
+        "Los Angeles Clippers": ["Clippers", "LAC", "Los Angeles Clippers"],
         "Memphis Grizzlies": ["Grizzlies", "MEM", "Memphis"],
         "Minnesota Timberwolves": ["Timberwolves", "Wolves", "MIN", "Minnesota"],
         "New Orleans Pelicans": ["Pelicans", "NOP", "New Orleans"],
@@ -39,23 +39,55 @@ def get_team_logo(team_name):
         "Atlanta Hawks": ["Hawks", "ATL", "Atlanta"],
     }
 
+    nba_team_ids = {
+        "Los Angeles Lakers": "1610612747",
+        "Golden State Warriors": "1610612744",
+        "Boston Celtics": "1610612738",
+        "Chicago Bulls": "1610612741",
+        "Miami Heat": "1610612748",
+        "Brooklyn Nets": "1610612751",
+        "New York Knicks": "1610612752",
+        "Phoenix Suns": "1610612756",
+        "Milwaukee Bucks": "1610612749",
+        "Philadelphia 76ers": "1610612755",
+        "Toronto Raptors": "1610612761",
+        "Dallas Mavericks": "1610612742",
+        "Denver Nuggets": "1610612743",
+        "Houston Rockets": "1610612745",
+        "Los Angeles Clippers": "1610612746",
+        "Memphis Grizzlies": "1610612763",
+        "Minnesota Timberwolves": "1610612750",
+        "New Orleans Pelicans": "1610612740",
+        "Oklahoma City Thunder": "1610612760",
+        "Orlando Magic": "1610612753",
+        "Portland Trail Blazers": "1610612757",
+        "Sacramento Kings": "1610612758",
+        "San Antonio Spurs": "1610612759",
+        "Utah Jazz": "1610612762",
+        "Washington Wizards": "1610612764",
+        "Indiana Pacers": "1610612754",
+        "Cleveland Cavaliers": "1610612739",
+        "Charlotte Hornets": "1610612766",
+        "Detroit Pistons": "1610612765",
+        "Atlanta Hawks": "1610612737",
+    }
+
     nba_logo_base_url = "https://cdn.nba.com/logos/nba"
 
     # Convert user input to lowercase for better matching
     team_name = team_name.lower()
 
-    # Loop through team_logos dictionary to find a match
     for full_name, aliases in team_logos.items():
         if team_name in [full_name.lower()] + [alias.lower() for alias in aliases]:
-            team_id = list(team_logos.keys()).index(full_name) + 1610612737  # NBA Team IDs start from 1610612737
+            team_id = nba_team_ids[full_name]
             return f"{nba_logo_base_url}/{team_id}/primary/L/logo.svg"
 
-    return None  # Return None if no match found
+    return None
 
 
-# Function to fetch live betting odds (Requires API Key from TheOddsAPI)
+# Function to fetch live betting odds
 def get_live_odds(team1, team2):
-    api_key = "YOUR_API_KEY"  # Replace with your actual API key
+    api_key = "ff792c945f4baf64646ddec57299ca60"  # Replace with your API key
     url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?apiKey={api_key}&regions=us&markets=h2h,spreads&oddsFormat=decimal"
     
     response = requests.get(url)
@@ -70,28 +102,22 @@ def get_live_odds(team1, team2):
 
 
 # Title
-st.title("🏀 NBA Match Prediction & Betting Analyzer")
+st.title("🏀 NBA Match Predictor & Betting Insights")
 
 # Input fields
 team1 = st.text_input("🏠 Enter Home Team Name:", placeholder="e.g., Lakers")
 team2 = st.text_input("🚀 Enter Away Team Name:", placeholder="e.g., Warriors")
 
 # Display Team Logos if found
-if team1:
-    team1_logo = get_team_logo(team1)
-    if team1_logo:
-        st.image(team1_logo, width=100, caption=team1)
-    else:
-        st.warning(f"❌ No logo found for {team1}. Try another team name.")
+for team in [team1, team2]:
+    if team:
+        logo = get_team_logo(team)
+        if logo:
+            st.image(logo, width=100, caption=team)
+        else:
+            st.warning(f"❌ No logo found for {team}. Try another team name.")
 
-if team2:
-    team2_logo = get_team_logo(team2)
-    if team2_logo:
-        st.image(team2_logo, width=100, caption=team2)
-    else:
-        st.warning(f"❌ No logo found for {team2}. Try another team name.")
-
-# Prediction button
+# Predict Winner
 if st.button("🔮 Predict Winner"):
     if team1 and team2:
         predicted_winner = team1 if len(team1) > len(team2) else team2
@@ -99,7 +125,7 @@ if st.button("🔮 Predict Winner"):
     else:
         st.warning("⚠️ Please enter both team names!")
 
-# Betting Analysis button
+# Betting Insights
 if st.button("📊 Analyze Betting Odds"):
     if team1 and team2:
         odds = get_live_odds(team1, team2)
