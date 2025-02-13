@@ -84,6 +84,27 @@ def get_team_logo(team_name):
 
     return None
 
+    import random
+
+# When "Who will win" is clicked
+if st.button('Who will win'):
+    st.header("WHO WILL WIN?")
+
+    # Randomly predict the winner for now (replace with actual prediction logic later)
+    winner = random.choice([team1, team2])
+
+    # Display the winner and the team logos
+    st.write(f"The **{winner}** is going to win!")
+
+    # Show the team logos
+    for team in [team1, team2]:
+        logo = get_team_logo(team)
+        if logo:
+            st.image(logo, width=100, caption=team)
+        else:
+            st.warning(f"No logo found for {team}. Try another team name.")
+
+
 
 # Function to fetch live betting odds safely
 def get_live_odds(team1, team2):
