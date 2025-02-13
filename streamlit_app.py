@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import random
 
 # Set page configuration
 st.set_page_config(page_title="🏀 NBA Match Predictor & Betting Insights", page_icon="🏆", layout="centered")
@@ -84,32 +85,11 @@ def get_team_logo(team_name):
 
     return None
 
-    import random
-
-# When "Who will win" button is clicked
-if st.button('Who will win', key='who_will_win_button'):
-    st.header("WHO WILL WIN?")
-
-    # Randomly predict the winner for now (replace with actual prediction logic later)
-    winner = random.choice([team1, team2])
-
-    # Display the winner and the team logos
-    st.write(f"The **{winner}** is going to win!")
-
-    # Show the team logos
-    for team in [team1, team2]:
-        logo = get_team_logo(team)
-        if logo:
-            st.image(logo, width=100, caption=team)
-        else:
-            st.warning(f"No logo found for {team}. Try another team name.")
-
-
 
 # Function to fetch live betting odds safely
 def get_live_odds(team1, team2):
-    api_key = "ff792c945f4baf64646ddec57299ca60"  # Replace with your actual API key
-    url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?regions=us&markets=h2h,spreads,totals&oddsFormat=american&apiKey=ff792c945f4baf64646ddec57299ca60"
+    api_key = "YOUR_API_KEY"  # Replace with your actual API key
+    url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?apiKey={api_key}&regions=us&markets=h2h,spreads&oddsFormat=decimal"
 
     try:
         response = requests.get(url)
@@ -147,18 +127,29 @@ st.title("🏀 NBA Match Predictor & Betting Insights")
 team1 = st.text_input("🏠 Enter Home Team Name:", placeholder="e.g., Lakers")
 team2 = st.text_input("🚀 Enter Away Team Name:", placeholder="e.g., Warriors")
 
+# Display team logos when user enters team names
+if team1:
+    logo1 = get_team_logo(team1)
+    if logo1:
+        st.image(logo1, width=100, caption=team1)
+    else:
+        st.warning(f"No logo found for {team1}. Try another team name.")
+
+if team2:
+    logo2 = get_team_logo(team2)
+    if logo2:
+        st.image(logo2, width=100, caption=team2)
+    else:
+        st.warning(f"No logo found for {team2}. Try another team name.")
+
 # Add buttons for triggering actions
 if st.button('Who will win'):
     if team1 and team2:
-        # Display Team Logos if found
-        for team in [team1, team2]:
-            logo = get_team_logo(team)
-            if logo:
-                st.image(logo, width=100, caption=team)
-            else:
-                st.warning(f"No logo found for {team}. Try another team name.")
+        # Randomly predict the winner for now (replace with actual prediction logic later)
+        winner = random.choice([team1, team2])
+        st.write(f"The **{winner}** is going to win!")
     else:
-        st.warning("⚠️ Please enter both team names to get predictions.")
+        st.warning("⚠️ Please enter both team names to get a prediction.")
 
 if st.button('Analyze Betting Odds'):
     if team1 and team2:
