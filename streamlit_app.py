@@ -119,3 +119,4 @@ def get_live_odds(team1, team2):
         return f"❌ API Error: {e}"
     except (KeyError, IndexError, TypeError):
         return "⚠️ Error retrieving betting odds. Please try again later."
+        
