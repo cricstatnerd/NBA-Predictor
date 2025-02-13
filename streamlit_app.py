@@ -88,7 +88,7 @@ def get_team_logo(team_name):
 # Function to fetch live betting odds safely
 def get_live_odds(team1, team2):
     api_key = "ff792c945f4baf64646ddec57299ca60"  # Replace with your actual API key
-    url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?apiKey={api_key}&regions=us&markets=h2h,spreads&oddsFormat=decimal"
+    url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?regions=us&markets=h2h,spreads,totals&oddsFormat=american&apiKey=ff792c945f4baf64646ddec57299ca60"
 
     try:
         response = requests.get(url)
@@ -120,3 +120,25 @@ def get_live_odds(team1, team2):
         return "⚠️ Error retrieving betting odds. Please try again later."
 
 
+# Title
+st.title("🏀 NBA Match Predictor & Betting Insights")
+
+# Get the team names as inputs
+team1 = st.text_input("🏠 Enter Home Team Name:", placeholder="e.g., Lakers")
+team2 = st.text_input("🚀 Enter Away Team Name:", placeholder="e.g., Warriors")
+
+# Ensure both teams are entered
+if team1 and team2:
+    # Display Team Logos if found
+    for team in [team1, team2]:
+        logo = get_team_logo(team)
+        if logo:
+            st.image(logo, width=100, caption=team)
+        else:
+            st.warning(f"No logo found for {team}. Try another team name.")
+
+    # Fetch Live Betting Odds
+    odds = get_live_odds(team1, team2)
+    st.write(odds)
+else:
+    st.warning("⚠️ Please enter both team names to get predictions and odds.")
