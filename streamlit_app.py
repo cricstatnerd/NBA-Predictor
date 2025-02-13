@@ -26,7 +26,7 @@ st.title("🏀 NBA Match Prediction & Betting Analyzer")
 team1 = st.text_input("🏠 Enter Home Team Name:", placeholder="e.g., Lakers")
 team2 = st.text_input("🚀 Enter Away Team Name:", placeholder="e.g., Warriors")
 
-# Only fetch logos if a team name is entered
+# Display Team Logos if found
 if team1:
     team1_logo = get_team_logo(team1)
     if team1_logo:
@@ -40,5 +40,20 @@ if team2:
         st.image(team2_logo, width=100, caption=team2)
     else:
         st.warning(f"❌ No logo found for {team2}. Try another team name.")
+
+# Prediction button
+if st.button("🔮 Predict Winner"):
+    if team1 and team2:
+        predicted_winner = team1 if len(team1) > len(team2) else team2
+        st.success(f"🏆 **Predicted Winner:** {predicted_winner}")
+    else:
+        st.warning("⚠️ Please enter both team names!")
+
+# Betting Analysis button
+if st.button("📊 Analyze Betting Odds"):
+    if team1 and team2:
+        st.info(f"💰 **Suggested Bet:** {team1} (-3.5) vs {team2} (+3.5)")
+    else:
+        st.warning("⚠️ Please enter both team names!")
 
 
