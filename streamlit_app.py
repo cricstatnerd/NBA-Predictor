@@ -95,20 +95,19 @@ def get_live_odds(team1, team2):
         response.raise_for_status()  # Raise an error for HTTP failures
         data = response.json()
 
-        # Debugging: print the raw API response
-        st.write("API Response:", data)
-
         odds_found = False  # Flag to check if we find odds
 
         for game in data:
-            if "teams" in game and isinstance(game["teams"], list):
-                game_teams = game["teams"]
-                if team1 in game_teams and team2 in game_teams:
-                    if "bookmakers" in game and len(game["bookmakers"]) > 0:
-                        outcomes = game["bookmakers"][0].get("markets", [{}])[0].get("outcomes", [])
-                        if len(outcomes) >= 2:
-                            odds_found = True
-                            return f"🏀 **Odds for {team1} vs {team2}:**\n🔹 **{team1}:** {outcomes[0].get('price', 'N/A')}x\n🔹 **{team2}:** {outcomes[1].get('price', 'N/A')}x"
+            # Normalize home_team and away_team comparison to lowercase
+            home_team = game.get("home_team", "").lower()
+            away_team = game.get("away_team", "").lower()
+
+            if home_team == team1.lower() and away_team == team2.lower():
+                if "bookmakers" in game and len(game["bookmakers"]) > 0:
+                    outcomes = game["bookmakers"][0].get("markets", [{}])[0].get("outcomes", [])
+                    if len(outcomes) >= 2:
+                        odds_found = True
+                        return f"🏀 **Odds for {team1} vs {team2}:**\n🔹 **{team1}:** {outcomes[0].get('price', 'N/A')}x\n🔹 **{team2}:** {outcomes[1].get('price', 'N/A')}x"
 
         # If no odds found
         if not odds_found:
@@ -127,18 +126,23 @@ st.title("🏀 NBA Match Predictor & Betting Insights")
 team1 = st.text_input("🏠 Enter Home Team Name:", placeholder="e.g., Lakers")
 team2 = st.text_input("🚀 Enter Away Team Name:", placeholder="e.g., Warriors")
 
-# Ensure both teams are entered
-if team1 and team2:
-    # Display Team Logos if found
-    for team in [team1, team2]:
-        logo = get_team_logo(team)
-        if logo:
-            st.image(logo, width=100, caption=team)
-        else:
-            st.warning(f"No logo found for {team}. Try another team name.")
+# Add buttons for triggering actions
+if st.button('Who will win'):
+    if team1 and team2:
+        # Display Team Logos if found
+        for team in [team1, team2]:
+            logo = get_team_logo(team)
+            if logo:
+                st.image(logo, width=100, caption=team)
+            else:
+                st.warning(f"No logo found for {team}. Try another team name.")
+    else:
+        st.warning("⚠️ Please enter both team names to get predictions.")
 
-    # Fetch Live Betting Odds
-    odds = get_live_odds(team1, team2)
-    st.write(odds)
-else:
-    st.warning("⚠️ Please enter both team names to get predictions and odds.")
+if st.button('Analyze Betting Odds'):
+    if team1 and team2:
+        # Fetch and display Live Betting Odds
+        odds = get_live_odds(team1, team2)
+        st.write(odds)
+    else:
+        st.warning("⚠️ Please enter both team names to get betting odds.")
