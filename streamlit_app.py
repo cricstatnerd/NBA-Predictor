@@ -91,12 +91,11 @@ def get_live_odds(team1, team2):
     url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?apiKey={api_key}&regions=us&markets=h2h,spreads&oddsFormat=decimal"
 
     try:
-        # Make the API request
         response = requests.get(url)
         response.raise_for_status()  # Raise an error for HTTP failures
         data = response.json()
 
-        # Debugging: Print out the entire API response to understand its structure
+        # Debugging: print the raw API response
         st.write("API Response:", data)
 
         odds_found = False  # Flag to check if we find odds
@@ -111,7 +110,7 @@ def get_live_odds(team1, team2):
                             odds_found = True
                             return f"🏀 **Odds for {team1} vs {team2}:**\n🔹 **{team1}:** {outcomes[0].get('price', 'N/A')}x\n🔹 **{team2}:** {outcomes[1].get('price', 'N/A')}x"
 
-        # If no odds are found
+        # If no odds found
         if not odds_found:
             return "⚠️ No live odds available for this match."
 
@@ -119,4 +118,5 @@ def get_live_odds(team1, team2):
         return f"❌ API Error: {e}"
     except (KeyError, IndexError, TypeError):
         return "⚠️ Error retrieving betting odds. Please try again later."
-        
+
+
