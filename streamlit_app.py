@@ -88,8 +88,8 @@ def get_team_logo(team_name):
 
 # Function to fetch live betting odds safely
 def get_live_odds(team1, team2):
-    api_key = "YOUR_API_KEY"  # Replace with your actual API key
-    url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?apiKey={api_key}&regions=us&markets=h2h,spreads&oddsFormat=decimal"
+    api_key = "ff792c945f4baf64646ddec57299ca60"  # Replace with your actual API key
+    url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?regions=us&markets=h2h,spreads,totals&oddsFormat=american&apiKey=ff792c945f4baf64646ddec57299ca60"
 
     try:
         response = requests.get(url)
