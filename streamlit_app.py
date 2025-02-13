@@ -86,8 +86,8 @@ def get_team_logo(team_name):
 
     import random
 
-# When "Who will win" is clicked
-if st.button('Who will win'):
+# When "Who will win" button is clicked
+if st.button('Who will win', key='who_will_win_button'):
     st.header("WHO WILL WIN?")
 
     # Randomly predict the winner for now (replace with actual prediction logic later)
