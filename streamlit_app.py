@@ -85,20 +85,31 @@ def get_team_logo(team_name):
     return None
 
 
-# Function to fetch live betting odds
+# Function to fetch live betting odds safely
 def get_live_odds(team1, team2):
-    api_key = "ff792c945f4baf64646ddec57299ca60"  # Replace with your API key
+    api_key = "ff792c945f4baf64646ddec57299ca60"  # Replace with your actual API key
     url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/odds?apiKey={api_key}&regions=us&markets=h2h,spreads&oddsFormat=decimal"
-    
-    response = requests.get(url)
-    
-    if response.status_code == 200:
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
         data = response.json()
+
         for game in data:
-            if team1 in game["teams"] and team2 in game["teams"]:
-                return f"🏀 **Odds for {team1} vs {team2}:**\n🔹 **{team1}:** {game['bookmakers'][0]['markets'][0]['outcomes'][0]['price']}x\n🔹 **{team2}:** {game['bookmakers'][0]['markets'][0]['outcomes'][1]['price']}x"
+            if "teams" in game and isinstance(game["teams"], list):
+                game_teams = game["teams"]
+                if team1 in game_teams and team2 in game_teams:
+                    if "bookmakers" in game and len(game["bookmakers"]) > 0:
+                        outcomes = game["bookmakers"][0].get("markets", [{}])[0].get("outcomes", [])
+                        if len(outcomes) >= 2:
+                            return f"🏀 **Odds for {team1} vs {team2}:**\n🔹 **{team1}:** {outcomes[0].get('price', 'N/A')}x\n🔹 **{team2}:** {outcomes[1].get('price', 'N/A')}x"
+        
+        return "⚠️ No live odds available for this match."
     
-    return "No live odds available for this match."
+    except requests.exceptions.RequestException as e:
+        return f"❌ API Error: {e}"
+    except (KeyError, IndexError, TypeError):
+        return "⚠️ Error retrieving betting odds. Please try again later."
 
 
 # Title
@@ -132,3 +143,4 @@ if st.button("📊 Analyze Betting Odds"):
         st.info(odds)
     else:
         st.warning("⚠️ Please enter both team names!")
+
